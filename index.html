@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Coder Portfolio</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #00FF41; /* Klasik Matrix yeşili */
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-size: 3rem;
+        }
+
+        #yazi {
+            border-right: 3px solid #00FF41;
+            padding-right: 5px;
+            animation: blink 0.75s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="yazi"></div>
+
+    <script>
+        const metin = "Merhaba.";
+        const element = document.getElementById("yazi");
+        let index = 0;
+        let siliniyor = false;
+
+        function yaz() {
+            const suankiMetin = siliniyor ? metin.substring(0, index--) : metin.substring(0, index++);
+            element.innerHTML = suankiMetin;
+
+            if (!siliniyor && index > metin.length) {
+                siliniyor = true;
+                setTimeout(yaz, 2000); // Yazdıktan sonra bekle
+            } else if (siliniyor && index === 0) {
+                siliniyor = false;
+                setTimeout(yaz, 500); // Sildikten sonra bekle
+            } else {
+                setTimeout(yaz, siliniyor ? 100 : 200);
+            }
+        }
+
+        yaz();
+    </script>
+</body>
+<
+  /html>
