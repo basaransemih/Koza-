@@ -2,24 +2,26 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Coder Portfolio</title>
+    <title>Çok Yakında</title>
     <style>
         body {
             background-color: #000;
-            color: #00FF41; /* Klasik Matrix yeşili */
+            color: #00FF41; /* Coder yeşili */
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-size: 3rem;
+            font-size: 4rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #00FF41;
         }
 
         #yazi {
-            border-right: 3px solid #00FF41;
-            padding-right: 5px;
-            animation: blink 0.75s step-end infinite;
+            border-right: 4px solid #00FF41;
+            padding-right: 10px;
+            animation: blink 0.7s step-end infinite;
         }
 
         @keyframes blink {
@@ -32,28 +34,32 @@
     <div id="yazi"></div>
 
     <script>
-        const metin = "Merhaba.";
+        const metin = "ÇOK YAKINDA";
         const element = document.getElementById("yazi");
         let index = 0;
         let siliniyor = false;
 
         function yaz() {
-            const suankiMetin = siliniyor ? metin.substring(0, index--) : metin.substring(0, index++);
-            element.innerHTML = suankiMetin;
+            element.innerHTML = metin.substring(0, index);
 
-            if (!siliniyor && index > metin.length) {
-                siliniyor = true;
-                setTimeout(yaz, 2000); // Yazdıktan sonra bekle
-            } else if (siliniyor && index === 0) {
-                siliniyor = false;
-                setTimeout(yaz, 500); // Sildikten sonra bekle
+            if (!siliniyor) {
+                index++;
+                if (index > metin.length) {
+                    siliniyor = true;
+                    setTimeout(yaz, 2000); // Yazdıktan sonra bekleme süresi
+                    return;
+                }
             } else {
-                setTimeout(yaz, siliniyor ? 100 : 200);
+                index--;
+                if (index === 0) {
+                    siliniyor = false;
+                }
             }
+            
+            setTimeout(yaz, siliniyor ? 100 : 200); // Silme hızı / Yazma hızı
         }
 
         yaz();
     </script>
 </body>
-<
-  /html>
+</html>
