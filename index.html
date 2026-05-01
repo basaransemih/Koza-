@@ -2,15 +2,14 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>basaransemih</title>
+    <title>Çok Yakında</title>
     <style>
         body {
-            /* Frappe renk paleti: krem/kahve tonları */
-            background-color: #e5d3b3;
-            color: #5d4037;
+            /* Çok daha koyu, derin kahve/kömür tonları */
+            background-color: #1a1614;
+            color: #d7ccc8;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -20,59 +19,45 @@
         .search-container {
             display: flex;
             align-items: center;
-            background: #fff;
-            padding: 5px 20px;
-            border-radius: 50px; /* Tam yuvarlak kenarlar */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 2px solid #8d6e63;
+            background: #2d2724;
+            padding: 10px 30px;
+            border-radius: 50px;
+            border: 1px solid #4e342e;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         #yazi {
             font-size: 1.5rem;
-            min-width: 200px;
-            border-right: 2px solid #5d4037;
+            min-width: 220px;
+            color: #d7ccc8;
+            border-right: 2px solid #8d6e63;
             padding-right: 10px;
             animation: blink 0.7s step-end infinite;
         }
 
         .ara-btn {
-            background: #5d4037;
-            color: #e5d3b3;
+            background: #8d6e63;
+            color: #1a1614;
             border: none;
-            padding: 10px 25px;
+            padding: 12px 30px;
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            margin-left: 10px;
-            transition: transform 0.2s;
+            margin-left: 15px;
+            transition: all 0.3s;
         }
 
-        /* Tıklanma animasyonu */
+        /* "Ara" butonunun basılma animasyonu */
         .click-animation {
             animation: press 2s infinite;
         }
 
         @keyframes press {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(0.9); background: #3e2723; }
+            0%, 100% { transform: scale(1); background: #8d6e63; }
+            50% { transform: scale(0.95); background: #a1887f; }
         }
 
         @keyframes blink { 50% { border-color: transparent; } }
-
-        .footer-sig {
-            position: absolute;
-            bottom: 30px;
-            font-size: 2rem;
-            font-weight: bold;
-            letter-spacing: 5px;
-            /* Yavaşça renk değiştirme animasyonu */
-            animation: colorChange 3s infinite alternate;
-        }
-
-        @keyframes colorChange {
-            from { color: #5d4037; opacity: 0.5; }
-            to { color: #8d6e63; opacity: 1; }
-        }
     </style>
 </head>
 <body>
@@ -81,8 +66,6 @@
         <div id="yazi"></div>
         <button class="ara-btn click-animation">ARA</button>
     </div>
-
-    <div class="footer-sig">BASARANSEMIH</div>
 
     <script>
         const metin = "ÇOK YAKINDA";
