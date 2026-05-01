@@ -2,12 +2,13 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Çok Yakında</title>
+    <title>basaransemih</title>
     <style>
         body {
-            background-color: #000;
-            color: #00FF41;
-            font-family: 'Courier New', Courier, monospace;
+            /* Frappe renk paleti: krem/kahve tonları */
+            background-color: #e5d3b3;
+            color: #5d4037;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -16,44 +17,61 @@
             margin: 0;
         }
 
-        /* Arama Çubuğu Stili */
         .search-container {
-            width: 400px;
-            background: #111;
-            border: 1px solid #00FF41;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+            display: flex;
+            align-items: center;
+            background: #fff;
+            padding: 5px 20px;
+            border-radius: 50px; /* Tam yuvarlak kenarlar */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #8d6e63;
         }
 
         #yazi {
-            font-size: 2rem;
-            border-right: 3px solid #00FF41;
-            padding-right: 5px;
+            font-size: 1.5rem;
+            min-width: 200px;
+            border-right: 2px solid #5d4037;
+            padding-right: 10px;
             animation: blink 0.7s step-end infinite;
         }
 
-        /* En alt imza */
-        .footer-sig {
-            position: absolute;
-            bottom: 20px;
-            font-size: 1.2rem;
-            overflow: hidden;
-            width: 100%;
-            text-align: center;
-            white-space: nowrap;
+        .ara-btn {
+            background: #5d4037;
+            color: #e5d3b3;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+            transition: transform 0.2s;
         }
 
-        .marquee {
-            display: inline-block;
-            animation: slide 10s linear infinite;
+        /* Tıklanma animasyonu */
+        .click-animation {
+            animation: press 2s infinite;
+        }
+
+        @keyframes press {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.9); background: #3e2723; }
         }
 
         @keyframes blink { 50% { border-color: transparent; } }
-        
-        @keyframes slide {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+
+        .footer-sig {
+            position: absolute;
+            bottom: 30px;
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            /* Yavaşça renk değiştirme animasyonu */
+            animation: colorChange 3s infinite alternate;
+        }
+
+        @keyframes colorChange {
+            from { color: #5d4037; opacity: 0.5; }
+            to { color: #8d6e63; opacity: 1; }
         }
     </style>
 </head>
@@ -61,11 +79,10 @@
 
     <div class="search-container">
         <div id="yazi"></div>
+        <button class="ara-btn click-animation">ARA</button>
     </div>
 
-    <div class="footer-sig">
-        <div class="marquee">başaransemih - başaransemih - başaransemih - başaransemih</div>
-    </div>
+    <div class="footer-sig">BASARANSEMIH</div>
 
     <script>
         const metin = "ÇOK YAKINDA";
@@ -89,7 +106,7 @@
                     siliniyor = false;
                 }
             }
-            setTimeout(yaz, siliniyor ? 100 : 200);
+            setTimeout(yaz, siliniyor ? 50 : 150);
         }
         yaz();
     </script>
