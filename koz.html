@@ -2,64 +2,71 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Koza Arama</title>
+    <title>Koza - Brave Search Entegre</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding-top: 50px; }
-        .box { width: 90%; max-width: 600px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        .input-bar { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ccc; border-radius: 20px; }
-        .btn { padding: 10px 20px; border-radius: 20px; border: none; background: #1a73e8; color: white; cursor: pointer; margin: 5px; }
-        #results { margin-top: 20px; text-align: left; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        input { width: 75%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; background: #fb542b; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .result { margin-top: 20px; padding: 10px; border-bottom: 1px solid #eee; }
+        .result h3 { margin: 0; }
+        .result a { color: #fb542b; text-decoration: none; }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h1>Koza</h1>
-    <input type="text" id="searchInput" class="input-bar" placeholder="Ne aramak istersin?">
-    <div>
-        <button class="btn" onclick="directSearch('google')">Google'a Git</button>
-        <button class="btn" onclick="directSearch('ddg')">DDG'ye Git</button>
-        <button class="btn" onclick="fetchResults()">JSON Veri Getir (Searx)</button>
-    </div>
+<div class="container">
+    <h1>Koza Arama</h1>
+    <input type="text" id="query" placeholder="Ne aramak istersin?">
+    <button onclick="braveSearch()">Ara</button>
     <div id="results"></div>
 </div>
 
 <script>
-    // 1. Yönlendirme (En güvenli yöntem)
-    function directSearch(engine) {
-        const query = document.getElementById('searchInput').value;
-        const urls = {
-            google: "https://www.google.com/search?q=",
-            ddg: "https://duckduckgo.com/?q="
-        };
-        if(query) window.open(urls[engine] + encodeURIComponent(query), '_blank');
-    }
-
-    // 2. API ile veri çekme (CORS Bypass yöntemi: corsproxy.io kullanımı)
-    async function fetchResults() {
-        const query = document.getElementById('searchInput').value;
-        const display = document.getElementById('results');
-        if (!query) return;
-
-        display.innerHTML = "Yükleniyor...";
+    async function braveSearch() {
+        const query = document.getElementById('query').value;
+        const resultsDiv = document.getElementById('results');
         
-        // CORS engellerini aşmak için 'corsproxy.io' ekledik
-        const apiUrl = `https://corsproxy.io/?https://searx.be/search?q=${encodeURIComponent(query)}&format=json`;
+        // PAYLAŞTIĞIN ANAHTAR BURAYA EKLENDİ
+        const API_KEY = 'BSAdo6eFOo4bc3td4tuaB3Vlj1Bbb9d'; 
+
+        if (!query) return;
+        resultsDiv.innerHTML = "Veri çekiliyor...";
+
+        // CORS engellerini aşmak için 'corsproxy.io' kullanıldı
+        const proxyUrl = 'https://corsproxy.io/?';
+        const targetUrl = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}`;
 
         try {
-            const response = await fetch(apiUrl);
+            const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
+                headers: {
+                    'X-Subscription-Token': API_KEY,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error("API isteği başarısız oldu.");
+
             const data = await response.json();
             
-            display.innerHTML = data.results.slice(0, 5).map(item => `
-                <div style="margin-bottom:10px; border-bottom:1px solid #eee;">
-                    <a href="${item.url}" target="_blank" style="font-weight:bold;">${item.title}</a>
-                    <p style="font-size:0.8em;">${item.content || 'Açıklama yok'}</p>
-                </div>
-            `).join('');
-        } catch (e) {
-            display.innerHTML = "Hata: API isteği engellendi. Lütfen 'X'e Git' butonlarını kullan.";
+            if (data.web && data.web.results) {
+                resultsDiv.innerHTML = data.web.results.map(r => `
+                    <div class="result">
+                        <h3><a href="${r.url}" target="_blank">${r.title}</a></h3>
+                        <p>${r.description || 'Açıklama mevcut değil.'}</p>
+                    </div>
+                `).join('');
+            } else {
+                resultsDiv.innerHTML = "Sonuç bulunamadı.";
+            }
+            
+        } catch (error) {
+            resultsDiv.innerHTML = "Hata: API isteği engellendi veya anahtar geçersiz. Lütfen Brave panelinden anahtarını yenile.";
+            console.error(error);
         }
     }
 </script>
+
 </body>
 </html>
+
