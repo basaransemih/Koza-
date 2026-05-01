@@ -2,19 +2,23 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Çok Yakında</title>
     <style>
-        body {
+        body, html {
             background-color: #1a1614;
             color: #d7ccc8;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
+            /* Kaydırmayı engellemek için anahtar özellikler */
+            overflow: hidden; 
+            overscroll-behavior: none;
         }
 
         .search-container {
@@ -25,13 +29,13 @@
             border-radius: 100px;
             border: 2px solid #4e342e;
             box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-            width: 100%;
-            max-width: 700px; /* Büyük ekranlar için maksimum genişlik */
+            width: 90%;
+            max-width: 700px;
             transition: all 0.3s ease;
         }
 
         #yazi {
-            font-size: 2rem; /* Daha büyük yazı */
+            font-size: 2rem;
             flex-grow: 1;
             color: #d7ccc8;
             border-right: 3px solid #8d6e63;
@@ -112,6 +116,5 @@
         }
         yaz();
     </script>
-</bod
-    y>
+</body>
 </html>
