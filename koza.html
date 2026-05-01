@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koza Arama Motoru</title>
+    <style>
+        /* CSS Değişkenleri ile Tema Yönetimi */
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #202124;
+            --primary-color: #1a73e8;
+            --primary-hover: #1557b0;
+            --panel-bg: #ffffff;
+            --border-color: #dfe1e5;
+            --hover-bg: #f1f3f4;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --modal-overlay: rgba(0, 0, 0, 0.5);
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #202124;
+            --text-color: #e8eaed;
+            --primary-color: #8ab4f8;
+            --primary-hover: #aecbfa;
+            --panel-bg: #303134;
+            --border-color: #5f6368;
+            --hover-bg: #3c4043;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            --modal-overlay: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Genel Sıfırlamalar ve Temel Ayarlar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        /* Ayarlar Butonu (Sağ Üst) */
+        .settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .settings-btn:hover {
+            background-color: var(--hover-bg);
+        }
+
+        /* Ana Arama Konteyneri */
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Logo ve Başlık Alanı */
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+            /* Logo renginin temaya göre yumuşak geçiş yapmasını sağlar */
+            transition: stroke var(--transition-speed), fill var(--transition-speed);
+        }
+
+        .title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-color);
+        }
+
+        /* Arama Çubuğu */
+        .search-bar {
+            display: flex;
+            width: 100%;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 5px 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+        }
+
+        .search-bar:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            padding: 12px 0;
+            outline: none;
+        }
+
+        /* Arama Motoru Butonları (Flexbox) */
+        .engine-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .engine-btn {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .engine-btn:hover {
+            background-color: var(--hover-bg);
+            border-color: var(--text-color);
+        }
+
+        /* Modal (Ayarlar Penceresi) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--modal-overlay);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--panel-bg);
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-color);
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        /* Ayarlar Form Elemanları (Grid/Flex) */
+        .setting-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-group label {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .setting-group select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* Toggle Switch (Yeni Sekme & Tema için) */
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        
+        [data-theme="dark"] .slider {
+            background-color: #5f6368;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="settings-btn" id="openSettingsBtn" aria-label="Ayarlar">⚙️</button>
+
+    <main class="search-container">
+        
+        <div class="logo-container">
+            <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <g transform="rotate(45 50 50)">
+                    <ellipse cx="50" cy="50" rx="25" ry="40" fill="var(--primary-color)" opacity="0.15"/>
+                    <ellipse cx="50" cy="50" rx="20" ry="35" fill="none" stroke="var(--primary-color)" stroke-width="3"/>
+                    <path d="M35 35 Q50 25 65 35 M31 45 Q50 35 69 45 M30 55 Q50 45 70 55 M34 65 Q50 55 66 65" stroke="var(--primary-color)" stroke-width="2" fill="none" opacity="0.7"/>
+                </g>
+            </svg>
+            <h1 class="title">Koza</h1>
+        </div>
+        
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="İnternette arama yapın..." autocomplete="off" autofocus>
+        </div>
+
+        <div class="engine-buttons" id="engineButtons">
+            <button class="engine-btn" data-engine="google">🔍 Google</button>
+            <button class="engine-btn" data-engine="duckduckgo">🦆 DuckDuckGo</button>
+            <button class="engine-btn" data-engine="bing">🌐 Bing</button>
+            <button class="engine-btn" data-engine="yandex">🔄 Yandex</button>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Ayarlar</h2>
+                <button class="close-btn" id="closeSettingsBtn">&times;</button>
+            </div>
+
+            <div class="setting-group">
+                <label for="defaultEngineSelect">Varsayılan Arama Motoru</label>
+                <select id="defaultEngineSelect">
+                    <option value="google">Google</option>
+                    <option value="duckduckgo">DuckDuckGo</option>
+                    <option value="bing">Bing</option>
+                    <option value="yandex">Yandex</option>
+                </select>
+            </div>
+
+            <div class="setting-group toggle-container">
+                <label for="newTabToggle">Sonuçları Yeni Sekmede Aç</label>
+                <label class="switch">
+                    <input type="checkbox" id="newTabToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-group toggle-container">
+                <label for="darkModeToggle">Koyu Tema (Dark Mode)</label>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Clean Code Prensipleriyle Yapılandırılmış Koza Arama Motoru
+         */
+
+        // 1. Arama Motoru URL Yapıları
+        const ENGINES = {
+            google: "https://www.google.com/search?q=",
+            duckduckgo: "https://duckduckgo.com/?q=",
+            bing: "https://www.bing.com/search?q=",
+            yandex: "https://yandex.com/search/?text="
+        };
+
+        // 2. Varsayılan Uygulama Ayarları
+        const DEFAULT_SETTINGS = {
+            defaultEngine: "google",
+            openInNewTab: false,
+            darkMode: false
+        };
+
+        // 3. DOM Elementlerini Seçme
+        const elements = {
+            searchInput: document.getElementById('searchInput'),
+            engineButtons: document.querySelectorAll('.engine-btn'),
+            openSettingsBtn: document.getElementById('openSettingsBtn'),
+            closeSettingsBtn: document.getElementById('closeSettingsBtn'),
+            settingsModal: document.getElementById('settingsModal'),
+            defaultEngineSelect: document.getElementById('defaultEngineSelect'),
+            newTabToggle: document.getElementById('newTabToggle'),
+            darkModeToggle: document.getElementById('darkModeToggle'),
+            body: document.body
+        };
+
+        // 4. Uygulama Başlatma ve Ayar Yönetimi
+        class App {
+            constructor() {
+                this.settings = this.loadSettings();
+                this.init();
+            }
+
+            loadSettings() {
+                const saved = localStorage.getItem('kozaSettings');
+                return saved ? JSON.parse(saved) : { ...DEFAULT_SETTINGS };
+            }
+
+            saveSettings() {
+                localStorage.setItem('kozaSettings', JSON.stringify(this.settings));
+            }
+
+            init() {
+                this.applySettingsToUI();
+                this.setupEventListeners();
+            }
+
+            applySettingsToUI() {
+                this.toggleTheme(this.settings.darkMode);
+                elements.darkModeToggle.checked = this.settings.darkMode;
+                elements.newTabToggle.checked = this.settings.openInNewTab;
+                elements.defaultEngineSelect.value = this.settings.defaultEngine;
+            }
+
+            toggleTheme(isDark) {
+                if (isDark) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+            }
+
+            setupEventListeners() {
+                elements.openSettingsBtn.addEventListener('click', () => this.openModal());
+                elements.closeSettingsBtn.addEventListener('click', () => this.closeModal());
+                
+                elements.settingsModal.addEventListener('click', (e) => {
+                    if (e.target === elements.settingsModal) this.closeModal();
+                });
+
+                elements.darkModeToggle.addEventListener('change', (e) => {
+                    this.settings.darkMode = e.target.checked;
+                    this.toggleTheme(this.settings.darkMode);
+                    this.saveSettings();
+                });
+
+                elements.newTabToggle.addEventListener('change', (e) => {
+                    this.settings.openInNewTab = e.target.checked;
+                    this.saveSettings();
+                });
+
+                elements.defaultEngineSelect.addEventListener('change', (e) => {
+                    this.settings.defaultEngine = e.target.value;
+                    this.saveSettings();
+                });
+
+                elements.searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.executeSearch(this.settings.defaultEngine);
+                    }
+                });
+
+                elements.engineButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const engine = btn.getAttribute('data-engine');
+                        this.executeSearch(engine);
+                    });
+                });
+            }
+
+            openModal() {
+                elements.settingsModal.classList.add('active');
+            }
+
+            closeModal() {
+                elements.settingsModal.classList.remove('active');
+            }
+
+            executeSearch(engineKey) {
+                const query = elements.searchInput.value.trim();
+                if (!query) return;
+
+                const baseUrl = ENGINES[engineKey];
+                const searchUrl = baseUrl + encodeURIComponent(query);
+
+                if (this.settings.openInNewTab) {
+                    window.open(searchUrl, '_blank');
+                } else {
+                    window.location.href = searchUrl;
+                }
+            }
+        }
+
+        // Uygulamayı Başlat
+        document.addEventListener('DOMContentLoaded', () => {
+            new App();
+        });
+
+    </script>
+</body>
+</html>
